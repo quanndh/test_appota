@@ -1,0 +1,39 @@
+version: "3.4"
+
+services:
+  app:
+    build: .
+    volumes:
+      - ./:/app # mount từ môi trường gốc vào trong để nếu các bạn thay đổi code thì bên trong sẽ tự động cập nhật
+    environment:
+      - DB_HOST=db
+      - DATABASE=test_appota
+      - PORT=3000
+      - DB_PORT=3306
+      - TOKEN=abc
+      - DB_PASSWORD=1234
+      - DB_USER=root
+      - WEBHOOK_URL=http://test.com
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - db
+
+  db:
+    image: mysql
+    volumes:
+      - .docker/data/db:/data/db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: test_appota
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 1234
+  redis:
+    image: redis
+    volumes:
+      - .docker/data/redis:/data
+    restart: unless-stopped
